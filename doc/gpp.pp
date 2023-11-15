@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% GPP documentation source file                            %%%%
 %%%% (C) 2001 Denis Auroux                                    %%%%
-%%%% (C) 2003-2020 Tristan Miller                             %%%%
+%%%% (C) 2003-2023 Tristan Miller                             %%%%
 %%%%                                                          %%%%
 %%%% To get the man page, run:                                %%%%
 %%%%    gpp -H -Dman gpp.pp -o gpp.1                          %%%%
@@ -29,6 +29,7 @@ $define{Q}{<q>@@@1</q>}$
 $define{l}{&lt;}$
 $define{g}{&gt;}$
 $define{d}{-}$
+$define{dp}{-}$
 $define{b}{\}$
 $define{pre}{<pre>}$
 $define{nopre}{</pre>}$
@@ -72,6 +73,7 @@ $define{Q}{"@@@1"}$
 $define{l}{<}$
 $define{g}{>}$
 $define{d}{\-}$
+$define{dp}{\-}$
 $define{b}{\\}$
 $define{pre}{
 .in +.25i
@@ -121,6 +123,7 @@ $define{Q}{``@@@1''}$
 $define{l}{$isverb{<}{$<$}$}$
 $define{g}{$isverb{>}{$>$}$}$
 $define{d}{-{}}$
+$define{dp}{-}$
 $define{b}{$isverb{\}{$\backslash$}$}$
 $define{pre}{$define{inverb}$
 \indent\begin{Verbatim}[xleftmargin=3ex]}$
@@ -172,21 +175,22 @@ $endif$
 $endif$
 $endif$
 %%%%%%%%%%%%%%%%% some headers %%%%%%%%%%%%%%%%%%%
-$define{version}{2.27}$
+$define{version}{2.28}$
 $define{SYNTAX}{
 $pre$
-gpp [$d$$bra$o$pipe$O$ket$ $I{outfile}$] [$d$I$I{/include/path}$ ...]
-    [$d$D$I{name=val}$ ...] [$d$z$pipe$+z] [$d$x] [$d$m]
-    [$d$C$pipe$$d$T$pipe$$d$H$pipe$$d$X$pipe$$d$P$pipe$$d$U ... [$d$M ...]]
-    [$d$n$pipe$+n] [+c$I{$l$n$g$}$ $I{str1}$ $I{str2}$] [+s$I{$l$n$g$}$ $I{str1}$ $I{str2}$ $I{c}$]
-    [$d$c $I{str1}$] [$d$$d$nostdinc] [$d$$d$nocurinc]
-    [$d$$d$curdirinclast] [$d$$d$warninglevel $I{n}$]
-    [$d$$d$includemarker $I{str}$] [$d$$d$include $I{file}$]
+gpp [$dp$$bra$o$pipe$O$ket$ $I{outfile}$] [$dp$I$I{/include/path}$ ...]
+    [$dp$D$I{name=val}$ ...] [$dp$z$pipe$+z] [$dp$x] [$dp$m]
+    [$dp$C$pipe$$dp$T$pipe$$dp$H$pipe$$dp$X$pipe$$dp$P$pipe$$dp$U ... [$dp$M ...]]
+    [$dp$n$pipe$+n] [+c$I{$l$n$g$}$ $I{str1}$ $I{str2}$] [+s$I{$l$n$g$}$ $I{str1}$ $I{str2}$ $I{c}$]
+    [$dp$c $I{str1}$] [$dp$$dp$nostdinc] [$dp$$dp$nocurinc]
+    [$dp$$dp$curdirinclast] [$dp$$dp$warninglevel $I{n}$]
+    [$dp$$dp$includemarker $I{str}$] [$dp$$dp$include $I{file}$]
     [$I{infile}$]
 
-gpp $d$$d$help
+gpp $dp$$dp$help
 
-gpp $d$$d$version$nopre$
+gpp $dp$$dp$version
+$nopre$
 }$
 $ifdef{html}$
 <!DOCTYPE html>
@@ -855,6 +859,11 @@ Additionally, when the $I{$d$m}$ command line option is specified, GPP will
 automatically switch to the cpp compatibility mode upon including a file
 whose name ends with either `.c' or `.h'.
 $li$
+$BI{$dz$sinclude }{file}$
+This is a $Q{silent}$ version of the $I{$dz$include}$ meta-macro that does
+not emit an error in the event that the specified file does not exist or
+cannot be opened.
+$li$
 $BI{$dz$exec }{command}$
 This causes GPP to execute the specified command line and include its standard
 output in the current output. Note that, for security reasons, this meta-macro
@@ -1474,7 +1483,7 @@ Since version 2.12 it has been maintained by Tristan Miller
 $l$tristan@logological.org$g$.
 $S{COPYRIGHT}$
 Copyright $copy$$nbsp$1996$ndash$2001 Denis Auroux.$BR$
-Copyright $copy$$nbsp$2003$ndash$2020 Tristan Miller.$P$
+Copyright $copy$$nbsp$2003$ndash$2023 Tristan Miller.$P$
 Permission is granted to anyone to make or distribute verbatim copies
 of this document as received, in any medium, provided that the
 copyright notice and this permission notice are preserved, thus giving
