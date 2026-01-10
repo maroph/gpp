@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% GPP documentation source file                            %%%%
 %%%% (C) 2001 Denis Auroux                                    %%%%
-%%%% (C) 2003-2023 Tristan Miller                             %%%%
+%%%% (C) 2003-2026 Tristan Miller                             %%%%
 %%%%                                                          %%%%
 %%%% To get the man page, run:                                %%%%
 %%%%    gpp -H -Dman gpp.pp -o gpp.1                          %%%%
@@ -479,6 +479,10 @@ with the file name, and the third with 1, 2 or blank. When this option
 is specified in default, cpp or Prolog mode, GPP does its best to
 ensure that line numbers are the same in the output as in the input by
 inserting blank lines in the place of definitions or comments.
+$li$
+$BI{$d$$d$}$
+Delimits the end of the list of options and switches; the next
+command-line argument, if any, will be treated as the $I{infile}$.
 $li$
 $BI{infile}$
 Specify an input file from which GPP reads its input. If no input
@@ -1483,7 +1487,7 @@ Since version 2.12 it has been maintained by Tristan Miller
 $l$tristan@logological.org$g$.
 $S{COPYRIGHT}$
 Copyright $copy$$nbsp$1996$ndash$2001 Denis Auroux.$BR$
-Copyright $copy$$nbsp$2003$ndash$2023 Tristan Miller.$P$
+Copyright $copy$$nbsp$2003$ndash$2026 Tristan Miller.$P$
 Permission is granted to anyone to make or distribute verbatim copies
 of this document as received, in any medium, provided that the
 copyright notice and this permission notice are preserved, thus giving

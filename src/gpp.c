@@ -3,7 +3,7 @@
 ** Contact:   tristan@logological.org
 ** 
 ** Copyright (C) 1996, 1999, 2001 Denis Auroux
-** Copyright (C) 2003-2023 Tristan Miller
+** Copyright (C) 2003-2026 Tristan Miller
 ** 
 ** This program is free software: you can redistribute it and/or
 ** modify it under the terms of the GNU Lesser General Public License as
@@ -240,6 +240,7 @@ void construct_include_directive_marker(char **include_directive_marker,
         const char *includemarker_input);
 void escape_backslashes(const char *instr, char **outstr);
 static void DoInclude(char *file_name, int ignore_nonexistent);
+static void set_input_filename(const char *name, int *isinput, int *ishelp);
 
 /*
  ** strdup() and my_strcasecmp() are not ANSI C, so here we define our own
@@ -338,7 +339,7 @@ void PopSpecs(void) {
 void display_version(void) {
     printf(PACKAGE_STRING "\n");
     printf("Copyright (C) 1996-2001 Denis Auroux\n");
-    printf("Copyright (C) 2003-2020 Tristan Miller\n");
+    printf("Copyright (C) 2003-2026 Tristan Miller\n");
     printf("This is free software; see the source for copying conditions.  There is NO\n"
            "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
 }
@@ -370,6 +371,7 @@ void usage(void) {
     printf(" --curdirinclast : search the current directory last\n");
     printf(" --warninglevel n : set warning level\n");
     printf(" --includemarker formatstring : keep track of #include directives in output\n\n");
+    printf(" -- : delimits the end of the option list\n");
     printf(" --version : display version information and exit\n");
     printf(" -h, --help : display this message and exit\n\n");
 }
@@ -1181,9 +1183,24 @@ void shiftIn(int l) {
     }
 }
 
+static void set_input_filename(const char *name, int *isinput, int *ishelp) {
+    if (*isinput) {
+        *ishelp = 1;
+        return;
+    }
+
+    *isinput = 1;
+    C->in = fopen(name, "r");
+    free(C->filename);
+    C->filename = my_strdup(name);
+
+    if (C->in == NULL)
+        bug("Cannot open input file");
+}
+
 void initthings(int argc, char **argv) {
     char **arg, *s;
-    int i, isinput, isoutput, ishelp, ismode, hasmeta, usrmode;
+    int i, isinput, isoutput, ishelp, ismode, hasmeta, usrmode, endofoptions;
 
     DefaultOp = MakeCharsetSubset(DEFAULT_OP_STRING);
     PrologOp = MakeCharsetSubset(PROLOG_OP_STRING);
@@ -1214,6 +1231,7 @@ void initthings(int argc, char **argv) {
     C->out->bufsize = 0;
     C->lineno = 1;
     isinput = isoutput = ismode = ishelp = hasmeta = usrmode = 0;
+    endofoptions = 0;
     nincludedirs = 0;
     C->bufsize = 80;
     C->len = 0;
@@ -1230,88 +1248,84 @@ void initthings(int argc, char **argv) {
     dosmode = DEFAULT_CRLF;
 
     for (arg = argv + 1; *arg; arg++) {
-        if (strcmp(*arg, "--help") == 0 || strcmp(*arg, "-h") == 0) {
+        if (!endofoptions && strcmp(*arg, "--") == 0) {
+            endofoptions = 1;
+            continue;
+        }
+        if (endofoptions) {
+          set_input_filename(*arg, &isinput, &ishelp);
+        }
+        else if (strcmp(*arg, "--help") == 0 || strcmp(*arg, "-h") == 0) {
             usage();
             exit(EXIT_SUCCESS);
         }
-        if (strcmp(*arg, "--version") == 0) {
+        else if (strcmp(*arg, "--version") == 0) {
             display_version();
             exit(EXIT_SUCCESS);
         }
 #define DEPRECATED_WARNING fprintf(stderr, "gpp: warning: deprecated option `%s'; use `-%s' instead\n", *arg, *arg)
-        if (strcmp(*arg, "-nostdinc") == 0) {
+        else if (strcmp(*arg, "-nostdinc") == 0) {
             DEPRECATED_WARNING;
             NoStdInc = 1;
-            continue;
         }
-        if (strcmp(*arg, "-nocurinc") == 0) {
+        else if (strcmp(*arg, "-nocurinc") == 0) {
             DEPRECATED_WARNING;
             NoCurIncFirst = 1;
-            continue;
         }
-        if (strcmp(*arg, "-curdirinclast") == 0) {
+        else if (strcmp(*arg, "-curdirinclast") == 0) {
             DEPRECATED_WARNING;
             CurDirIncLast = 1;
             NoCurIncFirst = 1;
-            continue;
         }
-        if (strcmp(*arg, "-includemarker") == 0) {
+        else if (strcmp(*arg, "-includemarker") == 0) {
             DEPRECATED_WARNING;
             if (!(*(++arg))) {
                 usage();
                 exit(EXIT_FAILURE);
             }
             construct_include_directive_marker(&include_directive_marker, *arg);
-            continue;
         }
-        if (strcmp(*arg, "--include") == 0) {
+        else if (strcmp(*arg, "--include") == 0) {
             if (!(*(++arg))) {
                 usage();
                 exit(EXIT_FAILURE);
             }
             IncludeFile = *arg;
-            continue;
         }
-        if (strcmp(*arg, "-warninglevel") == 0) {
+        else if (strcmp(*arg, "-warninglevel") == 0) {
             DEPRECATED_WARNING;
             if (!(*(++arg))) {
                 usage();
                 exit(EXIT_FAILURE);
             }
             WarningLevel = atoi(*arg);
-            continue;
         }
-        if (strcmp(*arg, "--nostdinc") == 0) {
+        else if (strcmp(*arg, "--nostdinc") == 0) {
             NoStdInc = 1;
-            continue;
         }
-        if (strcmp(*arg, "--nocurinc") == 0) {
+        else if (strcmp(*arg, "--nocurinc") == 0) {
             NoCurIncFirst = 1;
-            continue;
         }
-        if (strcmp(*arg, "--curdirinclast") == 0) {
+        else if (strcmp(*arg, "--curdirinclast") == 0) {
             CurDirIncLast = 1;
             NoCurIncFirst = 1;
-            continue;
         }
-        if (strcmp(*arg, "--includemarker") == 0) {
+        else if (strcmp(*arg, "--includemarker") == 0) {
             if (!(*(++arg))) {
                 usage();
                 exit(EXIT_FAILURE);
             }
             construct_include_directive_marker(&include_directive_marker, *arg);
-            continue;
         }
-        if (strcmp(*arg, "--warninglevel") == 0) {
+        else if (strcmp(*arg, "--warninglevel") == 0) {
             if (!(*(++arg))) {
                 usage();
                 exit(EXIT_FAILURE);
             }
             WarningLevel = atoi(*arg);
-            continue;
         }
 
-        if (**arg == '+') {
+        else if (**arg == '+') {
             switch ((*arg)[1]) {
             case 'c':
                 s = (*arg) + 2;
@@ -1356,13 +1370,7 @@ void initthings(int argc, char **argv) {
                 ishelp = 1;
             }
         } else if (**arg != '-') {
-            ishelp |= isinput;
-            isinput = 1;
-            C->in = fopen(*arg, "r");
-            free(C->filename);
-            C->filename = my_strdup(*arg);
-            if (C->in == NULL )
-                bug("Cannot open input file");
+          set_input_filename(*arg, &isinput, &ishelp);
         } else
             switch ((*arg)[1]) {
             case 'I':
@@ -1490,6 +1498,7 @@ void initthings(int argc, char **argv) {
             default:
                 ishelp = 1;
             }
+        
         if (hasmeta && !usrmode) {
             usage();
             exit(EXIT_FAILURE);
