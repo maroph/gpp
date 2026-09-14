@@ -2,8 +2,7 @@
 
 ## Create Script configure
 
-
-    $ autoreconf -i
+    $ autoreconf -fi
 
 ## Create Makefile and Build the Software
 
